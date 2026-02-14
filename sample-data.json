@@ -1,0 +1,33 @@
+[
+  {
+    "id": "1739215830000",
+    "address": "2 Compass Close",
+    "postcode": "SO19 8QA",
+    "price": "375000",
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "parking": "Driveway",
+    "garden": true,
+    "broadband": "1GBps Available",
+    "propertyType": "detached",
+    "tenure": "freehold",
+    "sqft": "1354",
+    "epcRating": "C",
+    "councilTaxBand": "D",
+    "commuteToEastleigh": "19",
+    "commuteToTotton": "23",
+    "agent": "Field Palmer",
+    "agentPhone": "02380422600",
+    "listingUrl": "https://www.rightmove.co.uk/properties/170",
+    "viewingDate": "2026-02-10T17:30",
+    "viewingNotes": "",
+    "pros": "Massive Open Plan Kitchen and plenty of storage space.\nHideaway for Washer/Dryer",
+    "cons": "Small/Cozy sitting room",
+    "offerMade": "",
+    "offerStatus": "",
+    "status": "viewed",
+    "favorite": false,
+    "dateAdded": "2026-02-10T17:30:00.000Z",
+    "rating": 0
+  }
+]

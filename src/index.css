@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark mode overrides for form elements */
+.dark input, .dark select, .dark textarea {
+  background-color: rgb(51 65 85);
+  border-color: rgb(71 85 105);
+  color: rgb(241 245 249);
+}
+
+.dark input::placeholder, .dark textarea::placeholder {
+  color: rgb(148 163 184);
+}
+
+.dark input[type="checkbox"] {
+  background-color: rgb(71 85 105);
+}
+
+.dark select option {
+  background-color: rgb(51 65 85);
+  color: rgb(241 245 249);
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Force light theme for printing */
+  * {
+    print-color-adjust: exact;
+  }
+
+  /* Hide dark mode backgrounds for print */
+  .dark {
+    --tw-gradient-from: rgb(248 250 252) !important;
+    --tw-gradient-to: rgb(241 245 249) !important;
+  }
+
+  /* Clean page breaks */
+  .property-card-print {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
