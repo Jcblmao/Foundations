@@ -2,8 +2,9 @@
 
 const camelToSnakeMap = {
   propertyType: 'property_type',
-  councilTaxBand: 'council_tax_band',
+  councilTaxBand: 'council_tax',
   epcRating: 'epc_rating',
+  agent: 'agent_name',
   agentPhone: 'agent_phone',
   agentEmail: 'agent_email',
   agentName: 'agent_name',
