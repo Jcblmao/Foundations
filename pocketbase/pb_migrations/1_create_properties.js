@@ -11,7 +11,7 @@ migrate((app) => {
     updateRule: "owner = @request.auth.id",
     deleteRule: "owner = @request.auth.id",
     fields: [
-      { name: "owner", type: "relation", required: true, options: { collectionId: "_pb_users_auth_", maxSelect: 1 } },
+      { name: "owner", type: "relation", required: true, collectionId: "_pb_users_auth_", maxSelect: 1 },
       { name: "address", type: "text", options: {} },
       { name: "postcode", type: "text", options: {} },
       { name: "price", type: "number", options: {} },
