@@ -57,7 +57,16 @@ export async function processQueue(pb, onProgress) {
           await pb.collection(entry.collection).create(entry.data);
           break;
         case 'update':
-          await pb.collection(entry.collection).update(entry.recordId, entry.data);
+          try {
+            await pb.collection(entry.collection).update(entry.recordId, entry.data);
+          } catch (updateErr) {
+            // Record doesn't exist in PocketBase — create it instead
+            if (updateErr?.status === 404 && entry.data) {
+              await pb.collection(entry.collection).create(entry.data);
+            } else {
+              throw updateErr;
+            }
+          }
           break;
         case 'delete':
           await pb.collection(entry.collection).delete(entry.recordId);

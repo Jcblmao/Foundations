@@ -59,14 +59,37 @@ export function useProperties(userId) {
           filter: `owner = "${userId}"`,
           sort: '-created'
         });
-        if (!cancelled) {
-          const mapped = records.map(r => mergeDefaults(fromDbRecord(r)));
-          setProperties(mapped);
-          // Update localStorage cache
+        if (cancelled) return;
+
+        const serverProperties = records.map(r => mergeDefaults(fromDbRecord(r)));
+        const serverIds = new Set(serverProperties.map(p => p.id));
+
+        // Find local-only properties (numeric timestamp IDs not yet on server)
+        let localOnly = [];
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const local = JSON.parse(saved);
+            localOnly = local.filter(p => p.id && /^\d+$/.test(p.id) && !serverIds.has(p.id));
+          }
+        } catch { /* ignore */ }
+
+        // Push local-only properties to PocketBase
+        for (const prop of localOnly) {
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
-          } catch { /* ignore */ }
+            const record = toDbRecord(prop, userId);
+            const created = await pb.collection('properties').create(record);
+            serverProperties.push(mergeDefaults(fromDbRecord(created)));
+          } catch (err) {
+            console.error('Failed to push local property to server:', err);
+            serverProperties.push(mergeDefaults(prop));
+          }
         }
+
+        setProperties(serverProperties);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(serverProperties));
+        } catch { /* ignore */ }
       } catch (err) {
         console.error('Failed to fetch properties from PocketBase:', err);
         // Keep using localStorage data
@@ -169,8 +192,28 @@ export function useProperties(userId) {
 
     if (userId && navigator.onLine) {
       const record = toDbRecord(updates, userId);
-      pb.collection('properties').update(id, record).catch(() => {
-        enqueue({ collection: 'properties', operation: 'update', recordId: id, data: toDbRecord(updates, userId) });
+      pb.collection('properties').update(id, record).catch((err) => {
+        // Record doesn't exist in PocketBase — create it instead
+        if (err?.status === 404) {
+          setProperties(prev => {
+            const fullProp = prev.find(p => p.id === id);
+            if (fullProp) {
+              const fullRecord = toDbRecord(fullProp, userId);
+              pb.collection('properties').create(fullRecord).then(created => {
+                setProperties(inner => {
+                  const updated = inner.map(p => p.id === id ? { ...p, id: created.id } : p);
+                  saveToLocalStorage(updated);
+                  return updated;
+                });
+              }).catch(() => {
+                enqueue({ collection: 'properties', operation: 'create', data: toDbRecord(fullProp, userId) });
+              });
+            }
+            return prev;
+          });
+        } else {
+          enqueue({ collection: 'properties', operation: 'update', recordId: id, data: record });
+        }
       });
     } else if (userId) {
       enqueue({ collection: 'properties', operation: 'update', recordId: id, data: toDbRecord(updates, userId) });
